@@ -13,8 +13,6 @@ async function popupLogin() {
     let popupUri = 'https://solid.community/common/popup.html';
     if (!session)
         session = await solid.auth.popupLogin({popupUri});
-
-    afterLoginSuccess(session);
 }
 
 function afterLoginSuccess(session) {
@@ -25,10 +23,10 @@ function afterLoginSuccess(session) {
 function sendSolidSessionToServer(session) {
     var xhr = new XMLHttpRequest();
     var url = "/login";
-    var data = session;
+    var data = JSON.stringify(session);
 
     xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Content-type", "application/json");
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             // do something with response
