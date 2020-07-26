@@ -97,25 +97,6 @@ async function getNotificationsForIri(inboxIri) {
     content.append("\n...\n\n");
 }
 
-async function getNotifications() {
-    action2Btn.disabled = true;
-
-    async function loadNotificationsFromIri(inboxIri) {
-        const inboxDoc = await tripledoc.fetchDocument(inboxIri);
-        const inbox = inboxDoc.getSubject(inboxIri);
-
-        return inbox.getAllRefs(ldp.contains);
-    }
-
-    const inboxIri = await getInboxIri();
-    const notifs = await loadNotificationsFromIri(inboxIri);
-    notifs.forEach(value => {
-        content.append(value + "\n");
-    });
-
-    action2Btn.disabled = false;
-}
-
 function logout() {
     function destroySessionOnServer() {
         var xhr = new XMLHttpRequest();

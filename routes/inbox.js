@@ -15,6 +15,12 @@ router.get('/', checkSession, function (req, res, next) {
   res.render('inbox/index', {title: 'inbox', webId: webId});
 });
 
+router.get('/:iri', checkSession, function (req, res, next) {
+  let iri = req.params.iri;
+  let webId = req.session.solidSession.webId;
+  res.render('inbox/detail', {title: 'inbox', iri: decodeURIComponent(iri), webId: webId});
+});
+
 // get monitored inboxes
 router.get('/monitor', checkSession, function (req, res, next) {
   let monitoredInboxes = req.session.monitoredInboxes;
