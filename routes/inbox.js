@@ -31,12 +31,12 @@ router.get('/monitor', checkSession, function (req, res, next) {
 
 // add new monitored inbox
 router.post('/monitor', checkSession, function (req, res, next) {
-  if (!req.is('application/json')) res.status(400).send('Bad Request');
+  if (!req.is('application/json') || !req.body.inboxIRI) res.status(400).send('Bad Request');
 
   let monitoredInboxes = req.session.monitoredInboxes;
   if (!monitoredInboxes) monitoredInboxes = [];
 
-  const newInboxIri = req.body.inboxIri;
+  const newInboxIri = req.body.inboxIRI;
   monitoredInboxes.push(newInboxIri);
 
   req.session.monitoredInboxes = monitoredInboxes;
