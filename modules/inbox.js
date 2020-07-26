@@ -1,6 +1,7 @@
 const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
 const auth = require('solid-auth-client');
+const addAlert = require('./alerts');
 
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 
@@ -9,13 +10,28 @@ const content = document.getElementById('content');
 const submitBtn = document.getElementById('submit');
 const webId = document.getElementById('webId').textContent;
 
-const watchedIRIs = [];
+const INBOX = {
+    iri: "",
+    notifs: []
+};
+
+const inboxes = [];
 
 function addWatchedIri(iri) {
-    if (watchedIRIs.includes(iri)) {
+    function isAlreadyWatched(iriToAdd) {
+        // return watchedIRIs.includes(iri);
+        return inboxes.map(inbox => inbox.iri).find(existingIri => existingIri === iriToAdd)
+    }
+
+    function addInbox(iriToAdd) {
+        // watchedIRIs.push(iri);
+        inboxes.push({iri: iriToAdd, notifs: []});
+    }
+
+    if (isAlreadyWatched(iri)) {
         console.info("IRI already watched: " + iri);
     } else {
-        watchedIRIs.push(iri);
+        addInbox(iri);
         console.info("IRI added to watch: " + iri);
     }
 }
@@ -32,9 +48,9 @@ async function addIriToMonitor() {
 
         console.log(inboxIri);
         addWatchedIri(inboxIri);
-
+        addAlert('success', "Successfully added IRI '" + iri + "' to monitored inboxes!", true);
     } catch (err) {
-        alert(err);
+        addAlert('danger', "Error adding IRI '" + iri + "' to monitored inboxes.");
     }
 
     submit.disabled = false;
@@ -43,7 +59,7 @@ async function addIriToMonitor() {
 
 async function loadNotifs() {
     console.info("loading notifs");
-    watchedIRIs.forEach(iri => getNotificationsForIri(iri));
+    inboxes.map(inbox => inbox.iri).forEach(iri => getNotificationsForIri(iri));
 }
 
 async function getNotificationsForIri(inboxIri) {

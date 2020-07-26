@@ -10,3 +10,7 @@ a {
 #webId {
   margin-right: 20px;
 }
+
+#resourceIri {
+  width: 30vw;
+}
