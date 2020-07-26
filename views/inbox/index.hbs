@@ -8,7 +8,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/inbox">Home <span class="sr-only">(current)</span></a>
             </li>
         </ul>
 
@@ -30,18 +30,18 @@
     <pre id="content"></pre>
     <hr>
 
-    <div>
-        <h2>Monitored inboxes</h2>
-        <ul id="inboxes"></ul>
-        <form class="form-inline">
-            <div class="form-group mx-sm-3 mb-2">
-                <label for="resourceIri" class="sr-only">IRI of resource to monitor</label>
-                <input type="text" class="form-control" id="resourceIri" placeholder="IRI of resource to monitor">
-            </div>
-            <button type="button" class="btn btn-primary mb-2" id="submit" title="Add resource's inbox to monitor">+ Add</button>
-        </form>
+    <h2>Monitored inboxes</h2>
+    <div id="inboxes" class="list-group"></div>
 
-    </div>
+    <form class="form-inline mt-5">
+        <div class="form-group mr-3"><!-- bootstrap margin classes - "margin-right-size3"... -->
+            <label for="resourceIri" class="sr-only">IRI of resource to monitor</label>
+            <input type="text" class="form-control" id="resourceIri" placeholder="IRI of resource to monitor">
+        </div>
+        <button type="button" class="btn btn-primary " id="submit" title="Add resource's inbox to monitor">+ Add
+        </button>
+    </form>
+
 </div>
 
 <script src="/javascripts/bundle-inbox.js"></script>

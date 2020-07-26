@@ -28,7 +28,6 @@ async function sendMonitoredInboxToServer(inboxIRI) {
 
 async function addWatchedInboxIRI(inboxIRI) {
     function isAlreadyWatched(iriToAdd) {
-        // return watchedIRIs.includes(iri);
         return inboxes.map(inbox => inbox.iri).find(existingIri => existingIri === iriToAdd)
     }
 
@@ -36,11 +35,7 @@ async function addWatchedInboxIRI(inboxIRI) {
         // watchedIRIs.push(iri);
         inboxes.push({iri: iriToAdd, notifs: []});
         await sendMonitoredInboxToServer(inboxIRI);
-
-        // add to shown list
-        let li = document.createElement("li");
-        li.appendChild(document.createTextNode(iriToAdd));
-        inboxList.appendChild(li);
+        addInboxToShownList(inboxIRI)
     }
 
     if (isAlreadyWatched(inboxIRI)) {
@@ -143,8 +138,16 @@ function logout() {
     });
 }
 
+function addInboxToShownList(inboxIRI) {
+    let a = document.createElement("a");
+    a.href = "/inbox/" + encodeURIComponent(inboxIRI);
+    a.classList.add("list-group-item", "list-group-item-action");
+    a.appendChild(document.createTextNode(inboxIRI));
+    inboxList.appendChild(a);
+}
+
 function loadMonitoredInboxesFromServer() {
-    const url = "inbox/monitor";
+    const url = "/inbox/monitor";
 
     fetch(url, {
         method: 'get',
@@ -156,9 +159,7 @@ function loadMonitoredInboxesFromServer() {
 
             // add inboxes to shown list
             inboxes.forEach(inboxIRI => {
-                let li = document.createElement("li");
-                li.appendChild(document.createTextNode(inboxIRI));
-                inboxList.appendChild(li);
+                addInboxToShownList(inboxIRI);
             });
 
             console.log("success retrieving monitored inbox from server.");
