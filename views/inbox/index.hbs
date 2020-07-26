@@ -29,8 +29,13 @@
     <h1>{{title}}</h1>
     <pre id="content"></pre>
     <hr>
-    <button type="button" class="btn btn-primary" id="action1">Primary</button>
-    <button type="button" class="btn btn-primary" id="action2">2</button>
+    <form class="form-inline">
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="resourceIri" class="sr-only">IRI resource to monitor</label>
+            <input type="text" class="form-control" id="resourceIri" placeholder="IRI resource to monitor">
+        </div>
+        <button type="button" class="btn btn-primary mb-2" id="submit">Monitor resource's inbox</button>
+    </form>
 </div>
 
 <script src="/javascripts/bundle-inbox.js"></script>

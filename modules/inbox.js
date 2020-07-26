@@ -2,51 +2,79 @@ const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
 const auth = require('solid-auth-client');
 
-const foaf = rdfnamespaces.foaf;
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 
 const logoutBtn = document.getElementById('logout');
 const content = document.getElementById('content');
-const action1Btn = document.getElementById('action1');
-const action2Btn = document.getElementById('action2');
+const submitBtn = document.getElementById('submit');
 const webId = document.getElementById('webId').textContent;
 
+const watchedIRIs = [];
 
-async function getName() {
-    /* 1. Fetch the Document at `webId`: */
-    const webIdDoc = await tripledoc.fetchDocument(webId);
-    /* 2. Read the Subject representing the current user's profile: */
-    const profile = webIdDoc.getSubject(webId);
-    /* 3. Get their foaf:name: */
-    console.log(profile.getString(foaf.name));
+function addWatchedIri(iri) {
+    if (watchedIRIs.includes(iri)) {
+        console.info("IRI already watched: " + iri);
+    } else {
+        watchedIRIs.push(iri);
+        console.info("IRI added to watch: " + iri);
+    }
+}
+
+async function addIriToMonitor() {
+    submitBtn.disabled = true;
+    const iriInput = document.getElementById("resourceIri");
+
+    const iri = iriInput.value;
+    try {
+        const iriDoc = await tripledoc.fetchDocument(iri);
+        const subject = iriDoc.getSubject(iri);
+        const inboxIri = subject.getRef(ldp.inbox);
+
+        console.log(inboxIri);
+        addWatchedIri(inboxIri);
+
+    } catch (err) {
+        alert(err);
+    }
+
+    submit.disabled = false;
+    iriInput.value = "";
+}
+
+async function loadNotifs() {
+    console.info("loading notifs");
+    watchedIRIs.forEach(iri => getNotificationsForIri(iri));
+}
+
+async function getNotificationsForIri(inboxIri) {
+    async function loadNotificationsFromIri(inboxIri) {
+        const inboxDoc = await tripledoc.fetchDocument(inboxIri);
+        const inbox = inboxDoc.getSubject(inboxIri);
+
+        return inbox.getAllRefs(ldp.contains);
+    }
+
+    const notifs = await loadNotificationsFromIri(inboxIri);
+
+    content.append("IRI: " + inboxIri + "\n");
+    notifs.forEach(value => {
+        content.append(value + "\n");
+    });
+    content.append("\n...\n\n");
 }
 
 async function getNotifications() {
     action2Btn.disabled = true;
 
-    async function getInboxIri() {
-        /* 1. Fetch the Document at `webId`: */
-        const webIdDoc = await tripledoc.fetchDocument(webId);
-        /* 2. Read the Subject representing the current user's profile: */
-        const profile = webIdDoc.getSubject(webId);
-        /* 3. Get their ldp:inbox: */
-        const inboxIri = profile.getRef(ldp.inbox);
-
-        console.log(inboxIri);
-        return inboxIri;
-    }
-
-    async function loadNotifications() {
-        const inboxIri = await getInboxIri();
+    async function loadNotificationsFromIri(inboxIri) {
         const inboxDoc = await tripledoc.fetchDocument(inboxIri);
         const inbox = inboxDoc.getSubject(inboxIri);
-        const notifs = inbox.getAllRefs(ldp.contains);
-        // return {inboxDoc, inbox, notifs};
-        return notifs;
+
+        return inbox.getAllRefs(ldp.contains);
     }
 
-    // const {inboxDoc, inbox, notifs} = await loadNotifications();
-    const notifs = await loadNotifications();
+    const inboxIri = await getInboxIri();
+    const notifs = await loadNotificationsFromIri(inboxIri);
     notifs.forEach(value => {
         content.append(value + "\n");
     });
@@ -54,36 +82,29 @@ async function getNotifications() {
     action2Btn.disabled = false;
 }
 
-function destroySessionOnServer() {
-    var xhr = new XMLHttpRequest();
-    var url = "/logout";
-
-    xhr.open("POST", url, true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            // do something with response
-            console.log(xhr.responseText);
-            window.location.replace("/");
-        }
-    };
-    xhr.send();
-}
-
 function logout() {
+    function destroySessionOnServer() {
+        var xhr = new XMLHttpRequest();
+        var url = "/logout";
+
+        xhr.open("POST", url, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // do something with response
+                console.log(xhr.responseText);
+                window.location.replace("/");
+            }
+        };
+        xhr.send();
+    }
+
     logoutBtn.disabled = true;
     auth.logout().then(function () {
         destroySessionOnServer();
     });
 }
 
-function loadInbox() {
-    auth.fetch("https://nokton.solid.community/inbox/")
-        .then(function (data) {
-            console.log(data);
-            content.append(JSON.stringify(data));
-        });
-}
-
 logoutBtn.addEventListener('click', logout);
-action1Btn.addEventListener('click', getName);
-action2Btn.addEventListener('click', getNotifications);
+submitBtn.addEventListener('click', addIriToMonitor);
+
+window.setInterval(loadNotifs, 1000 * 10);
