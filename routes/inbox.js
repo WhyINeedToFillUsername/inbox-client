@@ -11,8 +11,8 @@ function checkSession(req, res, next) {
 }
 
 router.get('/', checkSession, function (req, res, next) {
-  let user = req.session.solidSession.webId;
-  res.render('inbox/index', {title: 'inbox', user: user});
+  let webId = req.session.solidSession.webId;
+  res.render('inbox/index', {title: 'inbox', webId: webId});
 });
 
 module.exports = router;
