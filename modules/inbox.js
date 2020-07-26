@@ -121,7 +121,7 @@ function logout() {
 
 function addInboxToShownList(inboxIRI) {
     let a = document.createElement("a");
-    a.href = "/inbox/" + encodeURIComponent(inboxIRI);
+    a.href = "/inbox/detail/" + encodeURIComponent(inboxIRI);
     a.classList.add("list-group-item", "list-group-item-action");
     a.appendChild(document.createTextNode(inboxIRI));
     inboxList.appendChild(a);

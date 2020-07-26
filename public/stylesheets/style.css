@@ -18,3 +18,8 @@ a {
 #inboxes {
   width: 40vw;
 }
+
+pre {
+  padding: 10px;
+  border: #d3d3d3 solid 1px;
+}

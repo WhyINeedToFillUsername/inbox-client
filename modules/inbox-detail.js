@@ -1,6 +1,6 @@
 const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
-const auth = require('solid-auth-client');
+const solid = require('solid-auth-client');
 const addAlert = require('./alerts');
 
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
@@ -10,29 +10,53 @@ const notifsList = document.getElementById('notifs');
 
 async function loadNotifs() {
     console.info("loading notifs");
-    getNotificationsForIri(iri);
+    getNotificationsForInboxIri(iri);
 }
 
-async function getNotificationsForIri(inboxIri) {
-    async function loadNotificationsFromIri(inboxIri) {
+async function getNotificationsForInboxIri(inboxIri) {
+    async function loadNotificationIrisFromInboxIri(inboxIri) {
         const inboxDoc = await tripledoc.fetchDocument(inboxIri);
         const inbox = inboxDoc.getSubject(inboxIri);
 
-        return inbox.getAllRefs(ldp.contains);
+        const notificationIris = inbox.getAllRefs(ldp.contains);
+        console.log("loaded iris", notificationIris);
+        return notificationIris;
     }
 
-    const notifs = await loadNotificationsFromIri(inboxIri);
-
-    function addNotifToShownList(notifIRI) {
-        let button = document.createElement("button");
-        button.classList.add("list-group-item", "list-group-item-action");
-        button.appendChild(document.createTextNode(notifIRI));
-        notifsList.appendChild(button);
+    async function loadNotificationContent(notifIri, i) {
+        console.log("fetching iri", notifIri);
+        // using solid instead of tripledoc to fetch raw document - tripledoc requires text/turtle, can't convert some notifs => 500 from solid server
+        solid.fetch(notifIri)
+            .then(response => response.text())
+            .then(data => {
+                console.log("fetched iri", notifIri, data);
+                addNotifToShownList(notifIri, data, i);
+            });
     }
 
-    notifs.forEach(notifIRI => {
-        addNotifToShownList(notifIRI);
-    });
+    function addNotifToShownList(notifIRI, content, i) {
+        let div = document.createElement("div");
+        div.classList.add("card");
+        let escapedContent = $("<div>").text(content).html();
+        div.innerHTML = `
+        <div class="card-header" id="heading${i}"><h2 class="mb-0"><button class="btn btn-link btn-block text-left collapsed"
+            type="button" data-toggle="collapse" data-target="#collapse${i}" aria-expanded="false" aria-controls="collapse${i}">
+                    ${notifIRI}
+                    <i class="fas fa-chevron-down close"></i>
+        </button> </h2> </div>
+
+        <div id="collapse${i}" class="collapse" aria-labelledby="heading${i}" data-parent="#notifs"> <div class="card-body">
+            <pre class="text-wrap">${escapedContent}</pre>
+        </div> </div>
+        `;
+        notifsList.appendChild(div);
+    }
+
+    const notifs = await loadNotificationIrisFromInboxIri(inboxIri);
+    let i = 0;
+    for (const notifIRI of notifs) {
+        loadNotificationContent(notifIRI, i++);
+    }
 }
 
 function init() {
