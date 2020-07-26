@@ -1,5 +1,6 @@
 const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
+const auth = require('solid-auth-client');
 
 const foaf = rdfnamespaces.foaf;
 const ldp = rdfnamespaces.ldp.Resource; // http://www.w3.org/ns/ldp#Resource
@@ -35,13 +36,13 @@ function destroySessionOnServer() {
 
 function logout() {
     logoutBtn.disabled = true;
-    solid.auth.logout().then(function () {
+    auth.logout().then(function () {
         destroySessionOnServer();
     });
 }
 
 function loadInbox() {
-    solid.auth.fetch("https://nokton.solid.community/inbox/")
+    auth.fetch("https://nokton.solid.community/inbox/")
         .then(function (data) {
             console.log(data);
             content.append(data);

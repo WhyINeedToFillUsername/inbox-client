@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "build": "browserify public/javascripts/inbox.js -o public/javascripts/bundle.js",
-    "watch:js": "watchify public/javascripts/inbox.js -o public/javascripts/bundle.js",
+    "build": "browserify modules/inbox.js -o public/javascripts/bundle-inbox.js && browserify modules/solid-login.js -o public/javascripts/bundle-solid-login.js",
+    "watch:js:1": "watchify modules/inbox.js -o public/javascripts/bundle-inbox.js",
+    "watch:js:2": "watchify modules/solid-login.js -o public/javascripts/bundle-solid-login.js",
     "watch:app": "nodemon ./bin/www",
-    "develop": "run-p watch:js watch:app"
+    "develop": "run-p watch:js:1 watch:js:2 watch:app"
   },
   "dependencies": {
     "browserify": "^16.5.1",

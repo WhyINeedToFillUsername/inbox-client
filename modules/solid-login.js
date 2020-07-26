@@ -1,6 +1,8 @@
+const auth = require('solid-auth-client');
+
 const loginBtn = document.getElementById('login');
 
-solid.auth.trackSession(session => {
+auth.trackSession(session => {
     if (!session)
         console.log('The user is not logged in');
     else
@@ -9,10 +11,10 @@ solid.auth.trackSession(session => {
 
 async function popupLogin() {
     loginBtn.disabled = true;
-    let session = await solid.auth.currentSession();
+    let session = await auth.currentSession();
     let popupUri = 'https://solid.community/common/popup.html';
     if (!session)
-        session = await solid.auth.popupLogin({popupUri});
+        session = await auth.popupLogin({popupUri});
 }
 
 function afterLoginSuccess(session) {
