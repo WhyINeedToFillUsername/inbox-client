@@ -8,31 +8,46 @@ const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 const logoutBtn = document.getElementById('logout');
 const content = document.getElementById('content');
 const submitBtn = document.getElementById('submit');
-const webId = document.getElementById('webId').textContent;
+const inboxList = document.getElementById('inboxes');
 
-const INBOX = {
-    iri: "",
-    notifs: []
-};
+let inboxes = []; // INBOX = {iri: "", notifs: []};
 
-const inboxes = [];
+async function sendMonitoredInboxToServer(inboxIRI) {
+    const response = await fetch("inbox/monitor", {
+        method: 'post',
+        body: JSON.stringify({inboxIRI: inboxIRI}),
+        headers: {"Content-type": "application/json"},
+        credentials: "include"
+    });
 
-function addWatchedIri(iri) {
+    if (response.ok)
+        console.log("success submitting monitored inbox on server: " + inboxIRI);
+    else
+        console.error("error submitting monitored inbox on server: " + inboxIRI);
+}
+
+async function addWatchedInboxIRI(inboxIRI) {
     function isAlreadyWatched(iriToAdd) {
         // return watchedIRIs.includes(iri);
         return inboxes.map(inbox => inbox.iri).find(existingIri => existingIri === iriToAdd)
     }
 
-    function addInbox(iriToAdd) {
+    async function addInbox(iriToAdd) {
         // watchedIRIs.push(iri);
         inboxes.push({iri: iriToAdd, notifs: []});
+        await sendMonitoredInboxToServer(inboxIRI);
+
+        // add to shown list
+        let li = document.createElement("li");
+        li.appendChild(document.createTextNode(iriToAdd));
+        inboxList.appendChild(li);
     }
 
-    if (isAlreadyWatched(iri)) {
-        console.info("IRI already watched: " + iri);
+    if (isAlreadyWatched(inboxIRI)) {
+        console.info("IRI already being watched: " + inboxIRI);
     } else {
-        addInbox(iri);
-        console.info("IRI added to watch: " + iri);
+        await addInbox(inboxIRI);
+        console.info("IRI added to watch: " + inboxIRI);
     }
 }
 
@@ -56,7 +71,7 @@ async function addIriToMonitor() {
 
     let inboxIri = await retrieveInbox(resourceIRI);
     if (inboxIri) {
-        addWatchedIri(inboxIri);
+        await addWatchedInboxIRI(inboxIri);
         addAlert('success', "Successfully added IRI '" + inboxIri + "' to monitored inboxes!", true);
     } else {
         addAlert('danger', "Error adding resource to monitored inboxes - couldn't find inbox on the submitted IRI ('" + resourceIRI + "').");
@@ -128,7 +143,37 @@ function logout() {
     });
 }
 
-logoutBtn.addEventListener('click', logout);
-submitBtn.addEventListener('click', addIriToMonitor);
+function loadMonitoredInboxesFromServer() {
+    const url = "inbox/monitor";
 
-window.setInterval(loadNotifs, 1000 * 10);
+    fetch(url, {
+        method: 'get',
+        credentials: "include"
+    })
+        .then(response => response.json())
+        .then(data => {
+            inboxes = data;
+
+            // add inboxes to shown list
+            inboxes.forEach(inboxIRI => {
+                let li = document.createElement("li");
+                li.appendChild(document.createTextNode(inboxIRI));
+                inboxList.appendChild(li);
+            });
+
+            console.log("success retrieving monitored inbox from server.");
+        }).catch(error => {
+        console.error("error retrieving monitored inbox from server: ", error);
+    });
+}
+
+function init() {
+    logoutBtn.addEventListener('click', logout);
+    submitBtn.addEventListener('click', addIriToMonitor);
+
+    loadMonitoredInboxesFromServer();
+
+    window.setInterval(loadNotifs, 1000 * 10);
+}
+
+init();

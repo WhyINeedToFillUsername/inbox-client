@@ -29,13 +29,19 @@
     <h1>{{title}}</h1>
     <pre id="content"></pre>
     <hr>
-    <form class="form-inline">
-        <div class="form-group mx-sm-3 mb-2">
-            <label for="resourceIri" class="sr-only">IRI resource to monitor</label>
-            <input type="text" class="form-control" id="resourceIri" placeholder="IRI resource to monitor">
-        </div>
-        <button type="button" class="btn btn-primary mb-2" id="submit">Monitor resource's inbox</button>
-    </form>
+
+    <div>
+        <h2>Monitored inboxes</h2>
+        <ul id="inboxes"></ul>
+        <form class="form-inline">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="resourceIri" class="sr-only">IRI of resource to monitor</label>
+                <input type="text" class="form-control" id="resourceIri" placeholder="IRI of resource to monitor">
+            </div>
+            <button type="button" class="btn btn-primary mb-2" id="submit" title="Add resource's inbox to monitor">+ Add</button>
+        </form>
+
+    </div>
 </div>
 
 <script src="/javascripts/bundle-inbox.js"></script>
