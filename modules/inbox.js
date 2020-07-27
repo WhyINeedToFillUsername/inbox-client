@@ -3,6 +3,7 @@ const tripledoc = require('tripledoc');
 const auth = require('solid-auth-client');
 const addAlert = require('./alerts');
 const pod = require('./pod');
+const discover = require('./inbox-discover');
 
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 
@@ -49,30 +50,15 @@ async function addWatchedInboxIRI(inboxIRI) {
     }
 }
 
-async function retrieveInbox(iri) {
-    try {
-        const iriDoc = await tripledoc.fetchDocument(iri);
-        const subject = iriDoc.getSubject(iri);
-        const inboxIri = subject.getRef(ldp.inbox);
-        console.log(inboxIri);
-        return inboxIri;
-    } catch (err) {
-        addAlert('danger', "Error adding IRI '" + iri + "' to monitored inboxes.");
-        return false;
-    }
-}
-
 async function addIriToMonitor() {
     submitBtn.disabled = true;
     const iriInput = document.getElementById("resourceIri");
     const resourceIRI = iriInput.value;
 
-    let inboxIri = await retrieveInbox(resourceIRI);
+    let inboxIri = await discover.discoverInbox(resourceIRI);
     if (inboxIri) {
         await addWatchedInboxIRI(inboxIri);
         addAlert('success', "Successfully added IRI '" + inboxIri + "' to monitored inboxes!", true);
-    } else {
-        addAlert('danger', "Error adding resource to monitored inboxes - couldn't find inbox on the submitted IRI ('" + resourceIRI + "').");
     }
     submitBtn.disabled = false;
     iriInput.value = "";
