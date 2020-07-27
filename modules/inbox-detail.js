@@ -1,7 +1,9 @@
 const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
 const solid = require('solid-auth-client');
-const addAlert = require('./alerts');
+
+const logoutBtn = document.getElementById('logout');
+const logout = require('./solid-logout')(logoutBtn);
 
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 

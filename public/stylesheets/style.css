@@ -23,3 +23,7 @@ pre {
   padding: 10px;
   border: #d3d3d3 solid 1px;
 }
+
+#main {
+  display: inline-block;
+}

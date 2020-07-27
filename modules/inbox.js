@@ -5,9 +5,11 @@ const addAlert = require('./alerts');
 const pod = require('./pod');
 const discover = require('./inbox-discover');
 
+const logoutBtn = document.getElementById('logout');
+const logout = require('./solid-logout')(logoutBtn);
+
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 
-const logoutBtn = document.getElementById('logout');
 const submitBtn = document.getElementById('submit');
 const inboxList = document.getElementById('inboxes');
 
@@ -95,28 +97,6 @@ function loadNotifs() {
             inbox.notifs = newNotifs;
         });
     }
-}
-
-function logout() {
-    function destroySessionOnServer() {
-        var xhr = new XMLHttpRequest();
-        var url = "/logout";
-
-        xhr.open("POST", url, true);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                // do something with response
-                console.log(xhr.responseText);
-                window.location.replace("/");
-            }
-        };
-        xhr.send();
-    }
-
-    logoutBtn.disabled = true;
-    auth.logout().then(function () {
-        destroySessionOnServer();
-    });
 }
 
 function addInboxToShownList(inboxIRI) {

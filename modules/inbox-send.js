@@ -2,6 +2,9 @@ const auth = require('solid-auth-client');
 const addAlert = require('./alerts');
 const discover = require('./inbox-discover');
 
+const logoutBtn = document.getElementById('logout');
+const logout = require('./solid-logout')(logoutBtn);
+
 const messageForm = document.getElementById('messageForm');
 const iriToInput = document.getElementById('iriTo');
 const notifContentInput = document.getElementById('notifContent');
@@ -58,10 +61,12 @@ async function submitForm() {
         }).catch(err => {
             error = err;
         });
+    } else {
+        error = "Couldn't find an inbox.";
     }
 
     if (sent) addAlert('success', "Message sent!", true);
-    else addAlert('warning', "Error sending message: " + error);
+    else addAlert('warning', "Error sending message. " + error);
 
     iriToInput.value = "";
     notifContentInput.value = "";
@@ -70,6 +75,8 @@ async function submitForm() {
 
 
 function init(session) {
+    logoutBtn.addEventListener('click', logout);
+
     messageForm.addEventListener('submit', function (event) {
         submitForm();
         event.preventDefault();
