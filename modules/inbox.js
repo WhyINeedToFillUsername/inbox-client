@@ -6,7 +6,6 @@ const addAlert = require('./alerts');
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 
 const logoutBtn = document.getElementById('logout');
-const content = document.getElementById('content');
 const submitBtn = document.getElementById('submit');
 const inboxList = document.getElementById('inboxes');
 
@@ -33,7 +32,7 @@ async function addWatchedInboxIRI(inboxIRI) {
 
     async function addInbox(iriToAdd) {
         // watchedIRIs.push(iri);
-        inboxes.push({iri: iriToAdd, notifs: []});
+        inboxes.push({iri: iriToAdd});
         await sendMonitoredInboxToServer(inboxIRI);
         addInboxToShownList(inboxIRI)
     }
@@ -75,26 +74,32 @@ async function addIriToMonitor() {
     iriInput.value = "";
 }
 
-async function loadNotifs() {
-    console.info("loading notifs");
-    inboxes.map(inbox => inbox.iri).forEach(iri => getNotificationsForIri(iri));
-}
+function loadNotifs() {
 
-async function getNotificationsForIri(inboxIri) {
-    async function loadNotificationsFromIri(inboxIri) {
+    function compareAndNotify(oldNotifs, newNotifs) {
+        for (const newNotif of newNotifs) {
+            if (!oldNotifs.includes(newNotif)) {
+                console.log("new notif!"); // TODO create system notif!
+                addAlert('primary', "new notification! + href", true);
+            }
+        }
+    }
+
+    async function getNotificationsForIri(inboxIri) {
         const inboxDoc = await tripledoc.fetchDocument(inboxIri);
         const inbox = inboxDoc.getSubject(inboxIri);
 
         return inbox.getAllRefs(ldp.contains);
     }
 
-    const notifs = await loadNotificationsFromIri(inboxIri);
-
-    content.append("IRI: " + inboxIri + "\n");
-    notifs.forEach(value => {
-        content.append(value + "\n");
-    });
-    content.append("\n...\n\n");
+    console.info("loading notifs");
+    for (const inbox of inboxes) {
+        const iri = inbox.iri;
+        getNotificationsForIri(iri).then(newNotifs => {
+            if (inbox.notifs) compareAndNotify(inbox.notifs, newNotifs);
+            inbox.notifs = newNotifs;
+        });
+    }
 }
 
 function logout() {
@@ -136,10 +141,8 @@ function loadMonitoredInboxesFromServer() {
     })
         .then(response => response.json())
         .then(data => {
-            inboxes = data;
-
-            // add inboxes to shown list
-            inboxes.forEach(inboxIRI => {
+            data.forEach(inboxIRI => {
+                inboxes.push({iri: inboxIRI});
                 addInboxToShownList(inboxIRI);
             });
 

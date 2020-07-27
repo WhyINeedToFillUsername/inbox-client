@@ -8,6 +8,7 @@
     "watch:js:1": "watchify modules/inbox.js -o public/javascripts/bundle-inbox.js",
     "watch:js:2": "watchify modules/inbox-detail.js -o public/javascripts/bundle-inbox-detail.js",
     "watch:js:3": "watchify modules/solid-login.js -o public/javascripts/bundle-solid-login.js",
+    "watch:js": "run-p watch:js:1 watch:js:2 watch:js:3",
     "watch:app": "nodemon ./bin/www",
     "develop": "run-p watch:js:1 watch:js:2 watch:js:3 watch:app"
   },

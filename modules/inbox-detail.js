@@ -19,17 +19,17 @@ async function getNotificationsForInboxIri(inboxIri) {
         const inbox = inboxDoc.getSubject(inboxIri);
 
         const notificationIris = inbox.getAllRefs(ldp.contains);
-        console.log("loaded iris", notificationIris);
+        // console.log("loaded iris", notificationIris);
         return notificationIris;
     }
 
     async function loadNotificationContent(notifIri, i) {
-        console.log("fetching iri", notifIri);
+        // console.log("fetching iri", notifIri);
         // using solid instead of tripledoc to fetch raw document - tripledoc requires text/turtle, can't convert some notifs => 500 from solid server
         solid.fetch(notifIri)
             .then(response => response.text())
             .then(data => {
-                console.log("fetched iri", notifIri, data);
+                // console.log("fetched iri", notifIri, data);
                 addNotifToShownList(notifIri, data, i);
             });
     }
