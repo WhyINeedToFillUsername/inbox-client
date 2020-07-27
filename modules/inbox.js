@@ -89,11 +89,16 @@ function loadNotifs() {
         }
     }
 
-    async function getNotificationsForIri(inboxIri) {
-        const inboxDoc = await tripledoc.fetchDocument(inboxIri);
-        const inbox = inboxDoc.getSubject(inboxIri);
-
-        return inbox.getAllRefs(ldp.contains);
+    function getNotificationsForIri(inboxIri) {
+        return tripledoc.fetchDocument(inboxIri).then(
+            inboxDoc => {
+                const inbox = inboxDoc.getSubject(inboxIri);
+                return inbox.getAllRefs(ldp.contains);
+            }).catch(error => {
+            if (error.toString().includes("403"))
+                addAlert("warning", "error fetching data from inbox '" + inboxIri + "'. Make sure you have access!");
+            else console.error(error);
+        });
     }
 
     console.info("loading notifs");
