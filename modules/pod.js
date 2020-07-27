@@ -45,15 +45,23 @@ async function initialiseWatchedInboxesList(profile, typeIndex) {
     return watchedInboxes;
 }
 
-async function addWatchedInbox(inbox, watchedInboxesList) {
+async function addWatchedInbox(inbox, watchedInboxesListDoc) {
     // Initialise the new Subject:
-    const newInbox = watchedInboxesList.addSubject();
+    const newInbox = watchedInboxesListDoc.addSubject();
 
     newInbox.addRef(rdf.type, schema.URL);
     newInbox.addString(schema.url, inbox);
 
-    const success = await watchedInboxesList.save([newInbox]);
+    const success = await watchedInboxesListDoc.save([newInbox]);
     return success;
 }
 
-module.exports = {addWatchedInbox, getWatchedInboxesListDocument, initialiseWatchedInboxesList};
+async function removeWatchedInbox(inboxIRI, watchedInboxesListDoc) {
+    // for some reason, we have to surround the IRI in parenthesis (it is stored as literal object: Literal {id: ""https://nokton.solid.community/inbox/""})
+    const watchedInboxSubject = watchedInboxesListDoc.findSubject(schema.url, '"' + inboxIRI + '"');
+
+    watchedInboxesListDoc.removeSubject(watchedInboxSubject.asRef());
+    await watchedInboxesListDoc.save();
+}
+
+module.exports = {addWatchedInbox, removeWatchedInbox, getWatchedInboxesListDocument, initialiseWatchedInboxesList};

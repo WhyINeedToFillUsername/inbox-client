@@ -31,7 +31,9 @@
 </nav>
 
 <div class="container-fluid mt-3">
-    <h1>{{title}}: <small>{{iri}}</small></h1>
+    <h1 id="main">{{title}}: <small>{{iri}}</small></h1>
+    <button type="button" class="btn btn-outline-danger btn-lg float-right" id="stopMonitor">Stop monitoring this inbox</button>
+
     <h2>notifications</h2>
 
     <div class="accordion" id="notifs">

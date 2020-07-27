@@ -45,10 +45,10 @@ async function addWatchedInboxIRI(inboxIRI) {
     }
 
     if (isAlreadyWatched(inboxIRI)) {
-        console.info("IRI already being watched: " + inboxIRI);
+        console.info("IRI already being watched: ", inboxIRI);
     } else {
         await addInbox(inboxIRI);
-        console.info("IRI added to watch: " + inboxIRI);
+        console.info("IRI added to watch: ", inboxIRI);
     }
 }
 
@@ -89,7 +89,6 @@ function loadNotifs() {
         });
     }
 
-    console.info("loading notifs");
     for (const inbox of inboxes) {
         const iri = inbox.iri;
         getNotificationsForIri(iri).then(newNotifs => {
@@ -128,7 +127,6 @@ function loadMonitoredInboxesFromPod(webId) {
                 inboxes.push({iri: inboxIRI});
                 addInboxToShownList(inboxIRI);
             });
-        console.log(inboxesDocumentFromPod);
     })
         .catch(error => {
             console.error("error retrieving monitored inbox from server: ", error);

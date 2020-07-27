@@ -1,14 +1,18 @@
 const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
+const auth = require('solid-auth-client');
 const solid = require('solid-auth-client');
+const pod = require('./pod');
 
 const logoutBtn = document.getElementById('logout');
 const logout = require('./solid-logout')(logoutBtn);
 
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 
-const logoutBtn = document.getElementById('logout');
+const stopMonitorBtn = document.getElementById('stopMonitor');
 const notifsList = document.getElementById('notifs');
+
+let webId = "";
 
 async function loadNotifs() {
     console.info("loading notifs");
@@ -61,10 +65,40 @@ async function getNotificationsForInboxIri(inboxIri) {
     }
 }
 
-function init() {
+
+async function stopMonitor() {
+    stopMonitorBtn.disabled = true;
+
+    // try removing from watched inboxes
+    await tripledoc.fetchDocument(webId)
+        .then(profileDoc => {
+            return profileDoc.getSubject(webId);
+        })
+        .then(profile => {
+            return pod.getWatchedInboxesListDocument(profile)
+        }).then(watchedInboxesDoc => {
+
+            pod.removeWatchedInbox(iri, watchedInboxesDoc);
+        })
+        .catch(error => console.error(error));
+
+    // redirect home
+    stopMonitorBtn.disabled = false;
+    window.location.replace("/inbox");
+}
+
+function init(session) {
+    webId = session.webId;
     logoutBtn.addEventListener('click', logout);
+    stopMonitorBtn.addEventListener('click', stopMonitor);
 
     loadNotifs();
 }
 
-init();
+auth.trackSession(session => {
+    if (!session) {
+        console.log('The user is not logged in');
+        window.location.replace("/");
+    } else
+        init(session);
+});
