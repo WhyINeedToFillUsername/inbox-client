@@ -2,6 +2,7 @@ const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
 const auth = require('solid-auth-client');
 const addAlert = require('./alerts');
+const pod = require('./pod');
 
 const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 
@@ -31,7 +32,6 @@ async function addWatchedInboxIRI(inboxIRI) {
     }
 
     async function addInbox(iriToAdd) {
-        // watchedIRIs.push(iri);
         inboxes.push({iri: iriToAdd});
         await sendMonitoredInboxToServer(inboxIRI);
         addInboxToShownList(inboxIRI)
@@ -53,7 +53,7 @@ async function retrieveInbox(iri) {
         console.log(inboxIri);
         return inboxIri;
     } catch (err) {
-        // addAlert('danger', "Error adding IRI '" + iri + "' to monitored inboxes.");
+        addAlert('danger', "Error adding IRI '" + iri + "' to monitored inboxes.");
         return false;
     }
 }
