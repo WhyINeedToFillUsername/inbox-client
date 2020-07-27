@@ -11,30 +11,34 @@ const submitBtn = document.getElementById('submit');
 const inboxList = document.getElementById('inboxes');
 
 let inboxes = []; // INBOX = {iri: "", notifs: []};
+let webID = "";
 
-async function sendMonitoredInboxToServer(inboxIRI) {
-    const response = await fetch("inbox/monitor", {
-        method: 'post',
-        body: JSON.stringify({inboxIRI: inboxIRI}),
-        headers: {"Content-type": "application/json"},
-        credentials: "include"
-    });
-
-    if (response.ok)
-        console.log("success submitting monitored inbox on server: " + inboxIRI);
-    else
-        console.error("error submitting monitored inbox on server: " + inboxIRI);
-}
 
 async function addWatchedInboxIRI(inboxIRI) {
     function isAlreadyWatched(iriToAdd) {
         return inboxes.map(inbox => inbox.iri).find(existingIri => existingIri === iriToAdd)
     }
 
+    function saveToPod(inboxIRI) {
+        tripledoc.fetchDocument(webID)
+            .then(profileDoc => {
+                return profileDoc.getSubject(webId);
+            })
+            .then(profile => {
+                return pod.getWatchedInboxesListDocument(profile)
+            }).then(watchedInboxesDoc => {
+
+            const result = pod.addWatchedInbox(inboxIRI, watchedInboxesDoc);
+            // console.log(result);
+        })
+            .catch(error => console.error(error));
+    }
+
     async function addInbox(iriToAdd) {
         inboxes.push({iri: iriToAdd});
-        await sendMonitoredInboxToServer(inboxIRI);
-        addInboxToShownList(inboxIRI)
+        // await sendMonitoredInboxToServer(inboxIRI);
+        saveToPod(inboxIRI);
+        addInboxToShownList(inboxIRI);
     }
 
     if (isAlreadyWatched(inboxIRI)) {
@@ -79,7 +83,7 @@ function loadNotifs() {
     function compareAndNotify(oldNotifs, newNotifs) {
         for (const newNotif of newNotifs) {
             if (!oldNotifs.includes(newNotif)) {
-                console.log("new notif!"); // TODO create system notif!
+                // console.log("new notif!"); // TODO create system notif!
                 addAlert('primary', "new notification! + href", true);
             }
         }
@@ -132,33 +136,50 @@ function addInboxToShownList(inboxIRI) {
     inboxList.appendChild(a);
 }
 
-function loadMonitoredInboxesFromServer() {
-    const url = "/inbox/monitor";
+function loadMonitoredInboxesFromPod(webId) {
+    // 1) get solid profile
+    tripledoc.fetchDocument(webId)
+        .then(profileDoc => {
+            return profileDoc.getSubject(webId);
+        })
+        .then(profile => {
 
-    fetch(url, {
-        method: 'get',
-        credentials: "include"
-    })
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(inboxIRI => {
+    // 2) on the profile, get/create document that stores the watched inboxes list
+            return pod.getWatchedInboxesListDocument(profile)
+        }).then(inboxesDocumentFromPod => {
+
+    // 3) from the document, get all subjects of class schema.URL
+        inboxesDocumentFromPod.getAllSubjectsOfType(rdfnamespaces.schema.URL)
+            .forEach(node => {
+
+    // 4) each has the url saved as type string
+                const inboxIRI = node.getString();
                 inboxes.push({iri: inboxIRI});
                 addInboxToShownList(inboxIRI);
             });
-
-            console.log("success retrieving monitored inbox from server.");
-        }).catch(error => {
-        console.error("error retrieving monitored inbox from server: ", error);
-    });
+        console.log(inboxesDocumentFromPod);
+    })
+        .catch(error => {
+            console.error("error retrieving monitored inbox from server: ", error);
+            addAlert('warning', "error retrieving monitored inbox from server: " + error);
+        });
 }
 
-function init() {
+function init(session) {
     logoutBtn.addEventListener('click', logout);
     submitBtn.addEventListener('click', addIriToMonitor);
+    webID = session.webId;
 
-    loadMonitoredInboxesFromServer();
+    loadMonitoredInboxesFromPod(webID);
 
+    // start monitoring notifications in inboxes
     window.setInterval(loadNotifs, 1000 * 10);
 }
 
-init();
+auth.trackSession(session => {
+    if (!session) {
+        console.log('The user is not logged in');
+        window.location.replace("/");
+    } else
+        init(session);
+});
