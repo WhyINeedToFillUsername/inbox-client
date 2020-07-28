@@ -11,7 +11,7 @@ router.get('/send', function (req, res, next) {
 
 router.get('/detail/:iri', function (req, res, next) {
   let iri = req.params.iri;
-  res.render('inbox/detail', {title: 'inbox', iri: decodeURIComponent(iri)});
+  res.render('inbox/detail', {title: 'inbox - detail', iri: decodeURIComponent(iri)});
 });
 
 module.exports = router;

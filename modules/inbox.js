@@ -4,14 +4,14 @@ const auth = require('solid-auth-client');
 const addAlert = require('./alerts');
 const pod = require('./pod');
 const discover = require('./inbox-discover');
+const notification = require('./submodules/notifications');
 
 const logoutBtn = document.getElementById('logout');
 const logout = require('./solid-logout')(logoutBtn);
 
-const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
-
 const submitBtn = document.getElementById('submit');
 const inboxList = document.getElementById('inboxes');
+const requestNotificationsBtn = document.getElementById('requestNotifications');
 
 let inboxes = []; // INBOX = {iri: "", notifs: []};
 let webID = "";
@@ -81,7 +81,7 @@ function loadNotifs() {
         return tripledoc.fetchDocument(inboxIri).then(
             inboxDoc => {
                 const inbox = inboxDoc.getSubject(inboxIri);
-                return inbox.getAllRefs(ldp.contains);
+                return inbox.getAllRefs(rdfnamespaces.ldp.contains);
             }).catch(error => {
             if (error.toString().includes("403"))
                 addAlert("warning", "error fetching data from inbox '" + inboxIri + "'. Make sure you have access!");
@@ -144,6 +144,10 @@ function init(session) {
     webIdAnchor.innerHTML = webID;
 
     loadMonitoredInboxesFromPod(webID);
+
+    // init notification module
+    notification.init(requestNotificationsBtn);
+    document.getElementById('testNotif').addEventListener('click', notification.createSimpleNotification);
 
     // start monitoring notifications in inboxes
     window.setInterval(loadNotifs, 1000 * 10);

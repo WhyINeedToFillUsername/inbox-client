@@ -4,10 +4,9 @@ const auth = require('solid-auth-client');
 const solid = require('solid-auth-client');
 const pod = require('./pod');
 
+// init logout module
 const logoutBtn = document.getElementById('logout');
 const logout = require('./solid-logout')(logoutBtn);
-
-const ldp = rdfnamespaces.ldp; // http://www.w3.org/ns/ldp
 
 const stopMonitorBtn = document.getElementById('stopMonitor');
 const notifsList = document.getElementById('notifs');
@@ -24,7 +23,7 @@ async function getNotificationsForInboxIri(inboxIri) {
         const inboxDoc = await tripledoc.fetchDocument(inboxIri);
         const inbox = inboxDoc.getSubject(inboxIri);
 
-        const notificationIris = inbox.getAllRefs(ldp.contains);
+        const notificationIris = inbox.getAllRefs(rdfnamespaces.ldp.contains);
         // console.log("loaded iris", notificationIris);
         return notificationIris;
     }
