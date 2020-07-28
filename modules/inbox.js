@@ -68,11 +68,17 @@ async function addIriToMonitor() {
 
 function loadNotifs() {
 
-    function compareAndNotify(oldNotifs, newNotifs) {
+    function compareAndNotify(oldNotifs, newNotifs, inboxIRI) {
         for (const newNotif of newNotifs) {
             if (!oldNotifs.includes(newNotif)) {
-                // console.log("new notif!"); // TODO create system notif!
-                addAlert('primary', "new notification! + href", true);
+
+                // system notification
+                notification.createSimpleNotification("New message!", "New message in inbox '" + inboxIRI + "'.");
+
+                // application alert
+                const inboxDetailIRI = "/inbox/detail/" + encodeURIComponent(inboxIRI);
+                const message = "New message in inbox <a href='" + inboxDetailIRI + "'>" + inboxIRI + "</a> !";
+                addAlert('info', message);
             }
         }
     }
@@ -92,7 +98,7 @@ function loadNotifs() {
     for (const inbox of inboxes) {
         const iri = inbox.iri;
         getNotificationsForIri(iri).then(newNotifs => {
-            if (inbox.notifs) compareAndNotify(inbox.notifs, newNotifs);
+            if (inbox.notifs) compareAndNotify(inbox.notifs, newNotifs, iri);
             inbox.notifs = newNotifs;
         });
     }
@@ -147,7 +153,6 @@ function init(session) {
 
     // init notification module
     notification.init(requestNotificationsBtn);
-    document.getElementById('testNotif').addEventListener('click', notification.createSimpleNotification);
 
     // start monitoring notifications in inboxes
     window.setInterval(loadNotifs, 1000 * 10);

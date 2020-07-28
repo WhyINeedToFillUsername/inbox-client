@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "build": "browserify modules/inbox.js -o public/javascripts/bundle-inbox.js && browserify modules/inbox-detail.js -o public/javascripts/bundle-inbox-detail.js && browserify modules/solid-login.js -o public/javascripts/bundle-solid-login.js",
+    "build": "browserify modules/inbox.js -o public/javascripts/bundle-inbox.js && browserify modules/inbox-detail.js -o public/javascripts/bundle-inbox-detail.js && browserify modules/inbox-send.js -o public/javascripts/bundle-inbox-send.js && browserify modules/solid-login.js -o public/javascripts/bundle-solid-login.js",
     "watch:js:1": "watchify modules/inbox.js -o public/javascripts/bundle-inbox.js",
     "watch:js:2": "watchify modules/inbox-detail.js -o public/javascripts/bundle-inbox-detail.js",
     "watch:js:3": "watchify modules/inbox-send.js -o public/javascripts/bundle-inbox-send.js",
