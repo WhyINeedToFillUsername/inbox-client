@@ -6,6 +6,14 @@ const rdf = rdfnamespaces.rdf;
 const solid = rdfnamespaces.solid;
 const schema = rdfnamespaces.schema;
 
+
+async function getFriends(webID) {
+    const profileDoc = await tripledoc.fetchDocument(webID);
+    const profile = profileDoc.getSubject(webID);
+    const friends = profile.getAllRefs(rdfnamespaces.foaf.knows);
+    return friends;
+}
+
 async function getWatchedInboxesListDocument(profile) {
     /* 1. Check if a Document tracking our notes already exists. */
     const privateTypeIndexRef = profile.getRef(solid.privateTypeIndex);
@@ -64,4 +72,4 @@ async function removeWatchedInbox(inboxIRI, watchedInboxesListDoc) {
     await watchedInboxesListDoc.save();
 }
 
-module.exports = {addWatchedInbox, removeWatchedInbox, getWatchedInboxesListDocument, initialiseWatchedInboxesList};
+module.exports = {addWatchedInbox, removeWatchedInbox, getWatchedInboxesListDocument, getFriends};

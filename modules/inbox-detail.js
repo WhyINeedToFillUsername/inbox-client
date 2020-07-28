@@ -30,7 +30,6 @@ async function getNotificationsForInboxIri(inboxIri) {
     }
 
     async function loadNotificationContent(notifIri, i) {
-        // console.log("fetching iri", notifIri);
         // using solid instead of tripledoc to fetch raw document - tripledoc requires text/turtle, can't convert some notifs => 500 from solid server
         solid.fetch(notifIri)
             .then(response => response.text())

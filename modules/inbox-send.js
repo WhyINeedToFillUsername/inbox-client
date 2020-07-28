@@ -1,6 +1,7 @@
 const auth = require('solid-auth-client');
 const addAlert = require('./alerts');
 const discover = require('./inbox-discover');
+const pod = require('./pod');
 
 const logoutBtn = document.getElementById('logout');
 const logout = require('./solid-logout')(logoutBtn);
@@ -9,9 +10,22 @@ const messageForm = document.getElementById('messageForm');
 const iriToInput = document.getElementById('iriTo');
 const notifContentInput = document.getElementById('notifContent');
 const sendNotifBtn = document.getElementById('sendNotif');
+const friendsSelect = document.getElementById('friends');
 
 let webID = "";
 
+async function loadFriends() {
+    function addOptionToSelect(textContent, select) {
+        let option = document.createElement("option");
+        option.appendChild(document.createTextNode(textContent));
+        select.appendChild(option);
+    }
+
+    const friends = await pod.getFriends(webID);
+    friends.forEach(friend => {
+        addOptionToSelect(friend, friendsSelect);
+    })
+}
 
 function createMessage(from, to, content) {
     return {
@@ -42,10 +56,18 @@ function sendMessage(to, message) {
 }
 
 async function submitForm() {
+    function getDestination() {
+        let selected = friendsSelect.value;
+        if (selected === "useInput")
+            return iriToInput.value;
+        else
+            return selected;
+    }
+
     sendNotifBtn.disabled = true;
     let sent = false;
     let error = "";
-    let destinationResourceIRI = iriToInput.value;
+    let destinationResourceIRI = getDestination();
     let notifContent = notifContentInput.value;
 
     // 1) discover inbox on the submitted IRI
@@ -83,6 +105,7 @@ function init(session) {
     });
 
     webID = session.webId;
+    loadFriends();
 }
 
 auth.trackSession(session => {

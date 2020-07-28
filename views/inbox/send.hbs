@@ -34,14 +34,27 @@
     <h1>{{title}}</h1>
 
     <form class="mt-4" id="messageForm">
+        <fieldset class="form-group">
+            <legend>To:</legend>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="friends">Either choose one of your Solid friends:</label>
+                    <select id="friends" class="form-control">
+                        <option selected value="useInput">Use IRI from input</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="iriTo">Or input persons/resources IRI:</label>
+                    <input type="url" class="form-control" id="iriTo"
+                           placeholder="Resource IRI, e.g. 'https://tonda.solid.community/profile/card#me'">
+                </div>
+            </div>
+        </fieldset>
+
         <div class="form-group">
-            <label for="iriTo">To:</label>
-            <input type="url" class="form-control" id="iriTo" aria-describedby="emailHelp" required
-                   placeholder="Resource IRI, e.g. 'https://tonda.solid.community/profile/card#me'">
-        </div>
-        <div class="form-group">
-            <label for="notifContent">Raw notification content</label>
-            <textarea class="form-control" id="notifContent" rows="3" placeholder="JSON-LD, RDF..." required></textarea>
+            <label for="notifContent">Notification content</label>
+            <textarea class="form-control" id="notifContent" rows="3"
+                      placeholder="Hello, you have to try this awesome app!" required></textarea>
         </div>
         <button type="submit" class="btn btn-primary" id="sendNotif">Send</button>
     </form>
