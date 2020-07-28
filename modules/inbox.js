@@ -139,6 +139,10 @@ function init(session) {
     submitBtn.addEventListener('click', addIriToMonitor);
     webID = session.webId;
 
+    const webIdAnchor = document.getElementById("webId");
+    webIdAnchor.href = webID;
+    webIdAnchor.innerHTML = webID;
+
     loadMonitoredInboxesFromPod(webID);
 
     // start monitoring notifications in inboxes

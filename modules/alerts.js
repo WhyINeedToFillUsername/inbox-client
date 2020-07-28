@@ -1,5 +1,5 @@
 addAlert = function (level, message, autoDismiss) {
-    $(document.body).prepend('<div class="alert alert-' + level + ' alert-dismissible fade show" role="alert">\n' +
+    $("body main").prepend('<div class="alert alert-' + level + ' alert-dismissible fade show" role="alert">\n' +
         '            ' + message +
         '            <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
         '                <span aria-hidden="true">&times;</span>\n' +

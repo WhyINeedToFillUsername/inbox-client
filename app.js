@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const session = require('express-session');
 
 const indexRouter = require('./routes/index');
 const inboxRouter = require('./routes/inbox');
@@ -24,16 +23,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-  secret: 'TODOchange',
-  saveUninitialized: false,
-  resave: false,
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 5, // 5 hours,
-    sameSite: true,
-    secure: PROD
-  }
-}));
 
 app.use('/', indexRouter);
 app.use('/inbox', inboxRouter);

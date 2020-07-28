@@ -119,6 +119,11 @@ function init(session) {
     });
 
     webID = session.webId;
+
+    const webIdAnchor = document.getElementById("webId");
+    webIdAnchor.href = webID;
+    webIdAnchor.innerHTML = webID;
+
     loadFriends();
     handleDestinationInputs();
 }

@@ -88,6 +88,11 @@ async function stopMonitor() {
 
 function init(session) {
     webId = session.webId;
+
+    const webIdAnchor = document.getElementById("webId");
+    webIdAnchor.href = webId;
+    webIdAnchor.innerHTML = webId;
+
     logoutBtn.addEventListener('click', logout);
     stopMonitorBtn.addEventListener('click', stopMonitor);
 
