@@ -96,6 +96,19 @@ async function submitForm() {
 }
 
 
+function handleDestinationInputs() {
+    friendsSelect.addEventListener('change', function () {
+        let selected = friendsSelect.value;
+        if (selected === "useInput") {
+            iriToInput.disabled = false;
+            iriToInput.required = true;
+        } else {
+            iriToInput.disabled = true;
+            iriToInput.required = false;
+        }
+    });
+}
+
 function init(session) {
     logoutBtn.addEventListener('click', logout);
 
@@ -106,6 +119,7 @@ function init(session) {
 
     webID = session.webId;
     loadFriends();
+    handleDestinationInputs();
 }
 
 auth.trackSession(session => {
