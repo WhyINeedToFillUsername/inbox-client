@@ -51,7 +51,8 @@ function sendMessage(to, message) {
     return fetch(to, {
         method: 'post',
         body: JSON.stringify(message),
-        headers: {"Content-type": "application/ld+json"}
+        headers: {"Content-type": "application/ld+json"},
+        credentials: "include"
     });
 }
 
