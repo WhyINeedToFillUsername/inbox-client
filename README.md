@@ -32,5 +32,12 @@ Then go to http://localhost:3000/. Click on the "Enable notifications" button to
 
 Please note that request for notifications won't work in browser "private" mode.
 
+## Test
+Application uses [Nightwatch.js](https://nightwatchjs.org/) framework for E2E tests.
+Run tests using
+```bat
+npm test
+```
+
 ## Documentation
 All application logic is in javascript in the /modules folder. 
