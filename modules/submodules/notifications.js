@@ -1,4 +1,4 @@
-const addAlert = require('../alerts');
+const addAlert = require('./alerts');
 
 module.exports = {
     createSimpleNotification: function (title, message) {

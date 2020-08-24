@@ -1,13 +1,13 @@
 const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
 const auth = require('solid-auth-client');
-const addAlert = require('./alerts');
-const pod = require('./pod');
-const discover = require('./inbox-discover');
+const addAlert = require('./submodules/alerts');
+const pod = require('./submodules/pod');
+const discover = require('./submodules/inbox-discover');
 const notification = require('./submodules/notifications');
 
 const logoutBtn = document.getElementById('logout');
-const logout = require('./solid-logout')(logoutBtn);
+const logout = require('./submodules/solid-logout')(logoutBtn);
 
 const submitBtn = document.getElementById('submit');
 const inboxList = document.getElementById('inboxes');

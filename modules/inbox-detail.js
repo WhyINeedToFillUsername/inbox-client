@@ -2,11 +2,11 @@ const rdfnamespaces = require('rdf-namespaces');
 const tripledoc = require('tripledoc');
 const auth = require('solid-auth-client');
 const solid = require('solid-auth-client');
-const pod = require('./pod');
+const pod = require('./submodules/pod');
 
 // init logout module
 const logoutBtn = document.getElementById('logout');
-const logout = require('./solid-logout')(logoutBtn);
+const logout = require('./submodules/solid-logout')(logoutBtn);
 
 const stopMonitorBtn = document.getElementById('stopMonitor');
 const notifsList = document.getElementById('notifs');
